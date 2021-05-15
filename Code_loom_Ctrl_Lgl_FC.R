@@ -1,147 +1,121 @@
-pbmc.data <- Read10X(data.dir = "/home/dchatterjee/Documents/Lgl_Upd_NICD_FC/Ctrl_FC/new_reference/")
-pbmc <- CreateSeuratObject(counts = pbmc.data, project = "Ctrl_FC", min.cells = 3, min.features = 200)
-pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^mt:")
-pbmc[["percent.rp"]] <- PercentageFeatureSet(pbmc, pattern = "^Rp")
-pbmc <- subset(pbmc, subset = nCount_RNA < 12000 & nFeature_RNA < 1800 & nFeature_RNA > 650 & percent.mt < 10)
-pbmc <- NormalizeData(pbmc)
-cc.genes <- readLines(con = "/home/dchatterjee/cell_cycle_genes.txt")
+#CONTROL: w1118
+ctrl.data <- Read10X(data.dir = "~/Ctrl_FC/new_reference/")
+ctrl <- CreateSeuratObject(counts = ctrl.data, project = "Ctrl_FC", min.cells = 3, min.features = 200)
+ctrl[["percent.mt"]] <- PercentageFeatureSet(ctrl, pattern = "^mt:")
+ctrl[["percent.rp"]] <- PercentageFeatureSet(ctrl, pattern = "^Rp")
+ctrl <- subset(ctrl, subset = nCount_RNA < 12000 & nFeature_RNA < 1800 & nFeature_RNA > 650 & percent.mt < 10)
+ctrl <- NormalizeData(ctrl)
+cc.genes <- readLines(con = "~/cell_cycle_genes.txt")
 g2m.genes <- cc.genes[1:68]
 s.genes <- cc.genes[69:124]
-pbmc <- CellCycleScoring(pbmc, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
-pbmc$CC.Difference <- pbmc$S.Score - pbmc$G2M.Score
-pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
-pbmc <- ScaleData(pbmc, vars.to.regress = c("CC.Difference", "percent.mt", "nCount_RNA"), verbose = TRUE)
-pbmc <- RunPCA(pbmc, features = VariableFeatures(pbmc), npcs = 100, nfeature.print = 10, ndims.print = 1:5, verbose = T)
-pbmc <- FindNeighbors(pbmc, dims = 1:60)
-pbmc <- FindClusters(pbmc, resolution = 1)
-table(pbmc@active.ident,pbmc@meta.data$orig.ident)
-pbmc <- RunUMAP(pbmc, dims = 1:60, n.neighbors = 40, min.dist = 0.25)
-DimPlot(pbmc, reduction = "umap", pt.size = 1.2, label = TRUE)
-pbmc <- subset(pbmc, idents = c(19,17,8,13,15,9), invert = T)
+ctrl <- CellCycleScoring(ctrl, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
+ctrl$CC.Difference <- ctrl$S.Score - ctrl$G2M.Score
+ctrl <- FindVariableFeatures(ctrl, selection.method = "vst", nfeatures = 2000)
+ctrl <- ScaleData(ctrl, vars.to.regress = c("CC.Difference", "percent.mt", "nCount_RNA"), verbose = TRUE)
+ctrl <- RunPCA(ctrl, features = VariableFeatures(ctrl), npcs = 100, nfeature.print = 10, ndims.print = 1:5, verbose = T)
+ctrl <- FindNeighbors(ctrl, dims = 1:60)
+ctrl <- FindClusters(ctrl, resolution = 1)
+ctrl <- RunUMAP(ctrl, dims = 1:60, n.neighbors = 40, min.dist = 0.25)
+DimPlot(ctrl, reduction = "umap", pt.size = 1.2, label = TRUE)
+ctrl <- subset(ctrl, idents = c(19,17,8,13,15,9), invert = TRUE)
 
-pbmc -> ctrl
-
-ldat <- ReadVelocity(file = "/home/dchatterjee/Documents/Lgl_Upd_NICD_FC/LglIR/new_reference/LglIR.loom")
-pbmc <- as.Seurat(x = ldat)
-pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^mt:")
-pbmc[["percent.rp"]] <- PercentageFeatureSet(pbmc, pattern = "^Rp")
-pbmc <- subset(pbmc, subset = nCount_spliced < 15000 & nFeature_spliced < 1800 & nFeature_spliced > 600 & percent.mt < 4.5)
-pbmc <- NormalizeData(pbmc)
-cc.genes <- readLines(con = "/home/dchatterjee/cell_cycle_genes.txt")
+#SAMPLE: lglIR
+ldat <- ReadVelocity(file = "~/LglIR.loom")
+lgl <- as.Seurat(x = ldat)
+lgl[["percent.mt"]] <- PercentageFeatureSet(lgl, pattern = "^mt:")
+lgl[["percent.rp"]] <- PercentageFeatureSet(lgl, pattern = "^Rp")
+lgl <- subset(lgl, subset = nCount_spliced < 15000 & nFeature_spliced < 1800 & nFeature_spliced > 600 & percent.mt < 4.5)
+lgl <- NormalizeData(lgl)
+cc.genes <- readLines(con = "~/cell_cycle_genes.txt")
 g2m.genes <- cc.genes[1:68]
 s.genes <- cc.genes[69:124]
-pbmc <- CellCycleScoring(pbmc, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
-pbmc$CC.Difference <- pbmc$S.Score - pbmc$G2M.Score
-pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
-pbmc <- ScaleData(pbmc, vars.to.regress = c("CC.Difference", "percent.mt", "nCount_spliced"), verbose = TRUE)
-pbmc <- RunPCA(pbmc, features = VariableFeatures(pbmc), npcs = 100, nfeature.print = 10, ndims.print = 1:5, verbose = T)
-pbmc <- FindNeighbors(pbmc, dims = 1:60)
-pbmc <- FindClusters(pbmc, resolution = 1)
-table(pbmc@active.ident,pbmc@meta.data$orig.ident)
-pbmc <- RunUMAP(pbmc, dims = 1:60, n.neighbors = 40, min.dist = 0.20)
-DimPlot(pbmc, reduction = "umap", pt.size = 1.2, label = TRUE)
+lgl <- CellCycleScoring(lgl, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
+lgl$CC.Difference <- lgl$S.Score - lgl$G2M.Score
+lgl <- FindVariableFeatures(lgl, selection.method = "vst", nfeatures = 2000)
+lgl <- ScaleData(lgl, vars.to.regress = c("CC.Difference", "percent.mt", "nCount_spliced"), verbose = TRUE)
+lgl <- RunPCA(lgl, features = VariableFeatures(pbmc), npcs = 100, nfeature.print = 10, ndims.print = 1:5, verbose = T)
+lgl <- FindNeighbors(lgl, dims = 1:60)
+lgl <- FindClusters(lgl, resolution = 1)
+table(lgl@active.ident,lgl@meta.data$orig.ident)
+lgl <- RunUMAP(lgl, dims = 1:60, n.neighbors = 40, min.dist = 0.20)
+DimPlot(lgl, reduction = "umap", pt.size = 1.2, label = TRUE)
 
-pbmc <- subset(pbmc, idents = c(11,8,16,12), invert = T)
-pbmc@assays$spliced -> pbmc@assays$RNA
-pbmc@meta.data$nFeature_spliced -> pbmc@meta.data$nFeature_RNA
-pbmc@meta.data$nCount_spliced -> pbmc@meta.data$nCount_RNA
-pbmc@meta.data$orig.ident <- "LglIR_FC"
+lgl <- subset(lgl, idents = c(11,8,16,12), invert = T)
+lgl@assays$spliced -> lgl@assays$RNA
+lgl@meta.data$nFeature_spliced -> lgl@meta.data$nFeature_RNA
+lgl@meta.data$nCount_spliced -> lgl@meta.data$nCount_RNA
+lgl@meta.data$orig.ident <- "LglIR_FC"
 
-pbmc -> stim
-
-all.anchors <- FindIntegrationAnchors(object.list = list(ctrl, stim), anchor.features = 2000, dims = 1:50)
+#DATA INTEGRATION
+all.anchors <- FindIntegrationAnchors(object.list = list(ctrl, lgl), anchor.features = 2000, dims = 1:50)
 all.combined <- IntegrateData(anchorset = all.anchors, dims = 1:50)
 all.combined <- ScaleData(all.combined, vars.to.regress = c("CC.Difference", "percent.mt", "nCount_RNA"), verbose = TRUE)
 all.combined -> pbmc
 
-pbmc <- RunPCA(pbmc, features = VariableFeatures(pbmc), npcs = 100, nfeature.print = 10, ndims.print = 1:5, verbose = T)
-pbmc <- FindNeighbors(pbmc, dims = 1:60)
-pbmc <- FindClusters(pbmc, resolution = 1.5)
-table(pbmc@active.ident,pbmc@meta.data$orig.ident)
-pbmc <- RunUMAP(pbmc, dims = 1:60, n.neighbors = 40, min.dist = 0.20)
-DimPlot(pbmc, reduction = "umap", pt.size = 1.2, label = F, group.by = "orig.ident")
-DimPlot(pbmc, reduction = "umap", pt.size = 1.2, label = T)
+all.combined <- RunPCA(all.combined, features = VariableFeatures(all.combined), npcs = 100, nfeature.print = 10, ndims.print = 1:5, verbose = T)
+all.combined <- FindNeighbors(all.combined, dims = 1:60)
+all.combined <- FindClusters(all.combined, resolution = 1.5)
+table(all.combined@active.ident,all.combined@meta.data$orig.ident)
+all.combined <- RunUMAP(all.combined, dims = 1:60, n.neighbors = 40, min.dist = 0.20)
+DimPlot(all.combined, reduction = "umap", pt.size = 1.2, label = F, group.by = "orig.ident")
+DimPlot(all.combined, reduction = "umap", pt.size = 1.2, label = T)
 
-pbmc <- subset(pbmc, idents = c(24), invert = T)
+all.combined <- subset(all.combined, idents = c(24), invert = T)
 
-split.pbmc <- SplitObject(pbmc, split.by = "orig.ident")
-split.pbmc
-ctrl <- split.pbmc$Ctrl_FC
-stim <- split.pbmc$LglIR_FC
+split.combined <- SplitObject(all.combined, split.by = "orig.ident")
+split.combined
+ctrl <- split.combined$Ctrl_FC
+lgl <- split.combined$LglIR_FC
 DefaultAssay(ctrl) <- "RNA"
-DefaultAssay(stim) <- "RNA"
+DefaultAssay(lgl) <- "RNA"
 ctrl <- FindVariableFeatures(ctrl, selection.method = "vst", nfeatures = 2000)
-stim <- FindVariableFeatures(stim, selection.method = "vst", nfeatures = 2000)
+lgl <- FindVariableFeatures(lgl, selection.method = "vst", nfeatures = 2000)
 ctrl <- NormalizeData(ctrl)
-stim <- NormalizeData(stim)
-all.anchors <- FindIntegrationAnchors(object.list = list(ctrl, stim), anchor.features = 2000, dims = 1:50)
+lgl <- NormalizeData(lgl)
+all.anchors <- FindIntegrationAnchors(object.list = list(ctrl, lgl), anchor.features = 2000, dims = 1:50)
 all.combined <- IntegrateData(anchorset = all.anchors, dims = 1:50)
 DefaultAssay(all.combined) <- "integrated"
 all.combined <- ScaleData(all.combined, vars.to.regress = c("CC.Difference", "percent.mt", "nCount_RNA"), verbose = TRUE)
-all.combined -> pbmc
-pbmc <- RunPCA(pbmc, features = VariableFeatures(pbmc), npcs = 100, nfeature.print = 10, ndims.print = 1:5, verbose = T)
-pbmc <- FindNeighbors(pbmc, dims = 1:60)
-pbmc <- FindClusters(pbmc, resolution = 2.5)
-table(pbmc@active.ident,pbmc@meta.data$orig.ident)
-pbmc <- RunUMAP(pbmc, dims = 1:60, n.neighbors = 25, min.dist = 0.20)
-DimPlot(pbmc, reduction = "umap", pt.size = 1.2, label = TRUE)
 
-pbmc <- FindNeighbors(pbmc, dims = 1:60)
-pbmc <- FindClusters(pbmc, resolution = 1.5)
-table(pbmc@active.ident,pbmc@meta.data$orig.ident)
-pbmc <- RunUMAP(pbmc, dims = 1:60, n.neighbors = 25, min.dist = 0.20)
-DimPlot(pbmc, reduction = "umap", pt.size = 1.2, label = TRUE)
-DimPlot(pbmc, reduction = "umap", pt.size = 1.2, label = F, group.by = "orig.ident")
+all.combined <- RunPCA(all.combined, features = VariableFeatures(all.combined), npcs = 100, nfeature.print = 10, ndims.print = 1:5, verbose = T)
+all.combined <- FindNeighbors(all.combined, dims = 1:60)
+all.combined <- FindClusters(all.combined, resolution = 1)
+table(all.combined@active.ident,all.combined@meta.data$orig.ident)
+all.combined <- RunUMAP(all.combined, dims = 1:60, n.neighbors = 100, min.dist = 0.50)
+DimPlot(all.combined, reduction = "umap", pt.size = 1.2, label = TRUE)
+DimPlot(all.combined, reduction = "umap", pt.size = 1.2, label = F, group.by = "orig.ident")
 
-pbmc <- FindNeighbors(pbmc, dims = 1:60)
-pbmc <- FindClusters(pbmc, resolution = 2)
-table(pbmc@active.ident,pbmc@meta.data$orig.ident)
-pbmc <- RunUMAP(pbmc, dims = 1:60, n.neighbors = 25, min.dist = 0.20)
-DimPlot(pbmc, reduction = "umap", pt.size = 1.2, label = TRUE)
-
-pbmc <- FindNeighbors(pbmc, dims = 1:60)
-pbmc <- FindClusters(pbmc, resolution = 1.75)
-table(pbmc@active.ident,pbmc@meta.data$orig.ident)
-pbmc <- RunUMAP(pbmc, dims = 1:60, n.neighbors = 25, min.dist = 0.20)
-DimPlot(pbmc, reduction = "umap", pt.size = 1.2, label = TRUE)
-
-
-#LOOM and SCVELO PREPARATION
+#SCVELO PREPARATION
 library(SeuratDisk)
-pbmc <- readRDS("/home/dchatterjee/Documents/Lgl_Upd_NICD_FC/LglKD+CtrlWT_FC/new_reference/Reproducible/CtrlFC_veloLglIRFC_ONLYFC.rds")
+velgl <- readRDS("~/lglIR_velocity.rds")
 
-DefaultAssay(pbmc) <- "RNA"
-pbmc <- FindVariableFeatures(object = pbmc)
-pbmc <- ScaleData(pbmc)
-DefaultAssay(pbmc) <- "spliced"
-pbmc <- FindVariableFeatures(object = pbmc)
-pbmc <- ScaleData(pbmc)
-DefaultAssay(pbmc) <- "unspliced"
-pbmc <- FindVariableFeatures(object = pbmc)
-pbmc <- ScaleData(pbmc)
-DefaultAssay(pbmc) <- "ambiguous"
-pbmc <- FindVariableFeatures(object = pbmc)
-pbmc <- ScaleData(pbmc)
-DefaultAssay(pbmc) <- "integrated"
-pbmc <- FindVariableFeatures(object = pbmc)
-pbmc <- ScaleData(pbmc)
-DefaultAssay(pbmc) <- "RNA"
-pbmc.loom <- as.loom(pbmc, filename = "/home/cluster7ONLY_vel.loom", verbose = TRUE, overwrite = TRUE)
-pbmc.loom
+DefaultAssay(velgl) <- "RNA"
+velgl <- FindVariableFeatures(velgl)
+velgl <- ScaleData(velgl)
+DefaultAssay(velgl) <- "spliced"
+velgl <- FindVariableFeatures(velgl)
+velgl <- ScaleData(velgl)
+DefaultAssay(velgl) <- "unspliced"
+velgl <- FindVariableFeatures(velgl)
+velgl <- ScaleData(velgl)
+DefaultAssay(velgl) <- "ambiguous"
+velgl <- FindVariableFeatures(velgl)
+velgl <- ScaleData(velgl)
+DefaultAssay(velgl) <- "integrated"
+velgl <- FindVariableFeatures(velgl)
+velgl <- ScaleData(velgl)
+DefaultAssay(velgl) <- "RNA"
+velgl.loom <- as.loom(velgl, filename = "~/cluster7ONLY_vel.loom", verbose = TRUE, overwrite = TRUE)
+velgl.loom
 
-SaveH5Seurat(pbmc, filename = "lgl.h5Seurat", overwrite = TRUE)
+SaveH5Seurat(velgl, filename = "lgl.h5Seurat", overwrite = TRUE)
 Convert("lgl.h5Seurat", dest = "h5ad", overwrite = TRUE)
 
-pbmc.loom$close_all()
+velgl.loom$close_all()
 
 #IN PYTHON
 import scvelo as scv
 adata = scv.read("lgl.h5ad")
-adata
-
-#scv.pp.filter_and_normalize(adata, min_shared_counts=20, n_top_genes=2000)
-#scv.pp.moments(adata, n_pcs=60, n_neighbors=25)
-#scv.tl.velocity(adata)
 scv.tl.velocity(adata, mode='steady_state', min_r2=1)
 print(adata.var['velocity_genes'].sum(), adata.n_vars, adata.n_obs)
 
@@ -155,9 +129,6 @@ scv.tl.velocity_confidence(adata)
 keys = 'velocity_length', 'velocity_confidence'
 scv.pl.scatter(adata, c=keys, cmap='coolwarm', perc=[5, 95])
 scv.tl.rank_velocity_genes(adata, groupby='seurat_clusters', min_corr=.3)
-df = scv.DataFrame(adata.uns['rank_velocity_genes']['names'])
-df.head(50)
-
 
 scv.tl.recover_dynamics(adata)
 scv.tl.velocity(adata, mode='dynamical')
@@ -169,38 +140,3 @@ top_genes = adata.var['fit_likelihood'].sort_values(ascending=False).index
 scv.pl.heatmap(adata, var_names=top_genes, sortby='latent_time', col_color='seurat_clusters', n_convolve=100, cmap='coolwarm')
 scv.pl.scatter(adata, basis=top_genes[:15], ncols=5, color='seurat_clusters', frameon=False)
 scv.tl.rank_dynamical_genes(adata, groupby='seurat_clusters')
-df = scv.get_df(adata, 'rank_dynamical_genes/names')
-df.head(20)
-
-var_names = ['Mmp1', 'Keap1', 'cnc', 'sn']
-scv.pl.scatter(adata, var_names, color='seurat_clusters', frameon=True)
-#scv.pl.scatter(adata, x='latent_time', y=var_names, color='seurat_clusters', frameon=True)
-
-import matplotlib.pyplot as plt
-fig, ax = plt.subplots()
-scv.pl.velocity_embedding_stream(adata, basis='umap', color='seurat_clusters')
-fig.savefig('/home/dchatterjee/myimage.svg', format='svg', dpi=1200)
-
-top_genes = adata.var['fit_likelihood'].sort_values(ascending=False).index[:300]
-scv.pl.heatmap(adata, var_names=top_genes, sortby='latent_time', col_color='seurat_clusters', n_convolve=100)
-
-top_genes = adata.var['fit_likelihood'].sort_values(ascending=False).index
-scv.pl.scatter(adata, basis=top_genes[:15], ncols=5, frameon=False, color='seurat_clusters')
-
-scv.tl.rank_dynamical_genes(adata, groupby='seurat_clusters')
-scv.tl.rank_dynamical_genes(adata, groupby='seurat_clusters')
-df.head(20)
-
-scv.tl.differential_kinetic_test(adata, groupby='seurat_clusters')
-df = scv.get_df(adata, ['fit_diff_kinetics', 'fit_pval_kinetics'], precision=2)
-df.head(20)
-kwargs = dict(linewidth=2, add_linfit=True, frameon=False)
-scv.pl.scatter(adata, basis=['Ets21C'], add_outline='fit_diff_kinetics', **kwargs)
-
-#
-diff_clusters=list(adata.var['fit_diff_kinetics'])
-scv.pl.scatter(adata, legend_loc='right', size=60, title='diff kinetics', add_outline=diff_clusters, outline_width=(.8, .2))
-
-
-
-
