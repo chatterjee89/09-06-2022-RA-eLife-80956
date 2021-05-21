@@ -24,7 +24,7 @@ STAR --runThreadN 40 --outFileNamePrefix LglIR_24_2 --genomeDir ~/STAR_index --o
 STAR --runThreadN 40 --outFileNamePrefix LglIR_96_2 --genomeDir ~/STAR_index --outSAMtype BAM SortedByCoordinate --outFilterMultimapNmax 1 --chimSegmentMin 10 --readFilesCommand gunzip -c --readFilesIn ~/B-2-2_ACTTGA_L001_R1_001.fastq.gz,~/B-2-2_ACTTGA_L001_R1_002.fastq.gz,~/B-2-2_ACTTGA_L002_R1_001.fastq.gz,~/B-2-2_ACTTGA_L002_R1_002.fastq.gz
 
 #featureCounts:
-featureCounts -f -t gene -g gene_name -a ~/Drosophila_melanogaster.BDGP6.28.100.chr_filtered.GAL4.EGFP.gtf -O -o featurecounts_lglRNAi.txt ~/*.bam
+featureCounts -f -t gene -g gene_name -a ~/Drosophila_melanogaster.BDGP6.28.100.chr_filtered.GAL4.EGFP.gtf -O -o featurecounts_bulkSeq.txt ~/*.bam
 
 ## SINGLE-CELL SEQ DATA PRE-PROCESSING
 module load cellranger/3.0.1 Velocyto Subread-2.0.0
