@@ -1,5 +1,5 @@
-# manuscript_prep
-The R and Python codes implemented in the study described in the manuscript #NCOMMS-21-19077-T are available here:
+# Data Availability for 09-06-2022-RA-eLife-80956
+The R and Python codes implemented in the study described in the manuscript 09-06-2022-RA-eLife-80956 are available here:
 
 preprocessing_code.sh
 describes the codes run on the Shell terminal to process fasta files from both whole-tissue and single-cell RNA-Seq analysis.
