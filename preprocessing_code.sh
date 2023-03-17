@@ -31,7 +31,8 @@ module load cellranger/3.0.1 Velocyto Subread-2.0.0
 
 #Cellranger:
 #w1118
-cellranger count --transcriptome=~/refgenome4cellranger/ --id=Ctrl_FC --fastqs=~/fastq/ --sample=B_1,B_2,B_3,B_4 --chemistry=SC3Pv2 --indices=CAGTACTG,AGTAGTCT,GCAGTAGA,TTCCCGAC
+cellranger count --transcriptome=~/refgenome4cellranger/ --id=Ctrl_FC --chemistry=SC3Pv2 --fastqs=~/fastq --sample=SI-GA-B4_1,SI-GA-B4_2,SI-GA-B4_3,SI-GA-B4_4 --indices=ACTTCATA,GAGATGAC,TGCCGTGG,CTAGACCT #SRA dtataset: SRX7814226
+#cellranger count --transcriptome=~/refgenome4cellranger/ --id=Ctrl_FC --fastqs=~/fastq/ --sample=B_1,B_2,B_3,B_4 --chemistry=SC3Pv2 --indices=CAGTACTG,AGTAGTCT,GCAGTAGA,TTCCCGAC #Replicate1 #SRA dataset: SRP321151
 #lglRNAi
 cellranger count --transcriptome=~/refgenome4cellranger/ --id=LglKD_FC --fastqs=~/fastq/ --sample=B4_1,B4_2,B4_3,B4_4 --chemistry=SC3Pv2 --indices=GTCCGGTC,AAGATCAT,CCTGAAGG,TGATCTCA
 
